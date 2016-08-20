@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Workspace</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+</head>
+<body>
+      <p class="notice"><%= notice %></p>
+      <p class="alert"><%= alert %></p>
+  
+  <ul class="nav navbar-nav navbar-right">
+    <% if user_signed_in? %>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <%= image_tag(current_user.image, size: '20x20', style:'border-radius:3px;vertical-align:top;') if current_user.image %>
+          <%= current_user.name %>
+          <b class="caret"></b>
+        </a>
+      </li>
+      <li><%= link_to "Sign out", destroy_user_session_path, method: :delete, data: { confirm: "Are you sure?" } %></li>
+    <% else %>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sign in<b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><%= link_to "with Auth Blog", new_user_session_path %></li>
+          <li><%= link_to "with Facebook"%></li>
+        </ul>
+      </li>
+      <li><%= link_to "Sign up", new_user_registration_path %></li>
+    <% end %>
+  </ul>
+
+  <p align="right"><a href="/mypage">MY PAGE</a></p>
+  <%= yield %>
+  <hr><hr><hr><hr><hr>
+  
+  <div class="container">
+    <nav class="navbar navbar-default">
+    <div class="container-fluid" style = "margin-top : 40px">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <form class="navbar-form navbar-left" action = "/home/search_bar" method ="get" >
+           <input name = "search_bar" type="text" class="form-control" placeholder="Search">
+          <button type="submit" class="btn btn-primary" >검색</button>
+        </form>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+  
+    <label class="checkbox-inline">
+      <input type="checkbox" id="inlineCheckbox1" name="option" value="false"> 24시간
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="inlineCheckbox2" name="option" value="false"> 콘센트 많은가?
+    </label>
+  </div>
+  <hr>
+  
+  
+  <script type="text/javascript">
+    $(function(){
+      $("#inlineCheckbox1").click(function(){
+        var is_checked = $(this).is(":checked");
+        if(is_checked){
+          $(this).val("true");
+        }else{
+          $(this).val("false");
+        }
+      });
+      $("#inlineCheckbox2").click(function(){
+        var is_checked = $(this).is(":checked");
+        if(is_checked){
+          $(this).val("true");
+        }else{
+          $(this).val("false");
+        }
+      });
+      
+      
+      $("#search_btn").click(function(){
+        $.ajax({
+          method: "POST",
+          url: "/home/search",
+          data: { overnight: $("#inlineCheckbox1").val() ,
+                  outlet: $("#inlineCheckbox2").val()},
+          success: function(data){
+            for(i=0; i<data.cafes.length; i++){
+              $("#section").append("<p>" + data.cafes[i].name + "</p><br>");
+              $("#section").append("<p>" + data.cafes[i].open_time + "</p><br>");
+              $("#section").append("<p>" + data.cafes[i].close_time + "</p><br>");
+              $("#section").append("<p>" + data.cafes[i].lat + "</p><br>");
+              $("#section").append("<p>" + data.cafes[i].lng + "</p><br>");
+            }
+          } 
+        });
+      });
+    });
+  </script>
+</body>
+</html>
